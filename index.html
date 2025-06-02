@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>網頁小時鐘</title>
   
-  <!-- 字體：Major Mono Display（等寬、有風格） -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap">
+  <!-- Fantasque Sans Mono 等寬字體 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fantasque+Sans+Mono&display=swap">
 
   <!-- Favicon 分頁圖示 -->
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/wubenson0419/ClockWebsite_TWtime/refs/heads/main/clockwebsite_twtime_icon.png">
@@ -22,7 +22,6 @@
   <meta name="background-color" content="#000000" />
 
   <style>
-    /* ==== 全畫面黑底、字體等寬設定 ==== */
     html, body {
       margin: 0;
       padding: 0;
@@ -30,7 +29,7 @@
       height: 100%;
       background: #000;
       color: #fff;
-      font-family: 'Major Mono Display', monospace;
+      font-family: 'Fantasque Sans Mono', monospace;
       overflow: hidden;
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
@@ -42,7 +41,6 @@
       position: relative;
     }
 
-    /* ==== 時間顯示區塊（無光暈） ==== */
     #time {
       position: absolute;
       top: 50%;
@@ -57,7 +55,6 @@
       transition: transform 5s ease-in-out;
     }
 
-    /* ==== 校準提示 ==== */
     #message {
       position: absolute;
       top: calc(50% + 10vw);
@@ -88,11 +85,11 @@
         this.ntpDelta = 0;
       }
 
-      DEFAULT_OFFSET = 8 * 3600 * 1000;   // 預設 UTC+8
-      BURNIN_DISTANCE = 1.5;             // 偏移防烙印距離
-      BURNIN_INTERVAL = 10000;           // 每 10 秒偏移一次
-      MSG_FADE_DELAY = 5000;             // 訊息淡出時間
-      MSG_REMOVE_DELAY = 6000;           // 訊息移除時間
+      DEFAULT_OFFSET = 8 * 3600 * 1000;
+      BURNIN_DISTANCE = 1.5;
+      BURNIN_INTERVAL = 10000;
+      MSG_FADE_DELAY = 5000;
+      MSG_REMOVE_DELAY = 6000;
 
       init() {
         this.saveOffsetIfNotSet();
@@ -130,7 +127,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       new NTPClock('time', 'message').init();
 
-      // 註冊 PWA Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(err => console.error('SW 註冊失敗:', err));
       }
