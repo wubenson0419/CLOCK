@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>網頁小時鐘</title>
   
-  <!-- 字體 -->
+  <!-- 字體：Major Mono Display（等寬、有風格） -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap">
 
   <!-- Favicon 分頁圖示 -->
@@ -22,7 +22,7 @@
   <meta name="background-color" content="#000000" />
 
   <style>
-    /* ==== 全畫面純黑背景設定 ==== */
+    /* ==== 全畫面黑底、字體等寬設定 ==== */
     html, body {
       margin: 0;
       padding: 0;
@@ -42,7 +42,7 @@
       position: relative;
     }
 
-    /* ==== 中央時間顯示 ==== */
+    /* ==== 時間顯示區塊（無光暈） ==== */
     #time {
       position: absolute;
       top: 50%;
@@ -53,15 +53,11 @@
       white-space: nowrap;
       text-align: center;
       color: #FFFFFF;
-      text-shadow:
-        0 0 5px rgba(255,140,0,0.8),
-        0 0 15px rgba(255,140,0,0.6),
-        0 0 30px rgba(255,140,0,0.4);
       will-change: transform;
       transition: transform 5s ease-in-out;
     }
 
-    /* ==== 校準成功提示訊息 ==== */
+    /* ==== 校準提示 ==== */
     #message {
       position: absolute;
       top: calc(50% + 10vw);
@@ -92,11 +88,11 @@
         this.ntpDelta = 0;
       }
 
-      DEFAULT_OFFSET = 8 * 3600 * 1000;   // UTC+8 時區預設
-      BURNIN_DISTANCE = 1.5;             // 防烙印偏移量
-      BURNIN_INTERVAL = 10000;           // 每 10 秒做一次偏移
-      MSG_FADE_DELAY = 5000;             // 訊息淡出延遲
-      MSG_REMOVE_DELAY = 6000;           // 訊息移除延遲
+      DEFAULT_OFFSET = 8 * 3600 * 1000;   // 預設 UTC+8
+      BURNIN_DISTANCE = 1.5;             // 偏移防烙印距離
+      BURNIN_INTERVAL = 10000;           // 每 10 秒偏移一次
+      MSG_FADE_DELAY = 5000;             // 訊息淡出時間
+      MSG_REMOVE_DELAY = 6000;           // 訊息移除時間
 
       init() {
         this.saveOffsetIfNotSet();
@@ -134,7 +130,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       new NTPClock('time', 'message').init();
 
-      // PWA: 註冊 Service Worker
+      // 註冊 PWA Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(err => console.error('SW 註冊失敗:', err));
       }
