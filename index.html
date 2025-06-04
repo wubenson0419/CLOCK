@@ -10,6 +10,142 @@
 
   <!-- Favicon 分頁圖示 -->
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/wubenson0419/ClockWebsite_TWtime/refs/heads/main/clockwebsite_twtime_icon.png">
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>網頁小時鐘</title>
+  
+  <!-- Fantasque Sans Mono 字體 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/belluzj/fantasque-sans@master/fonts.css">
+
+  <!-- Favicon 分頁圖示 -->
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/wubenson0419/ClockWebsite/refs/heads/main/ClockWebsite_icon.png">
+
+  <!-- PWA 設定 -->
+  <link rel="manifest" href="manifest.json" type="application/manifest+json" crossorigin="use-credentials">
+
+  <!-- iOS 主畫面圖示 -->
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/wubenson0419/ClockWebsite/refs/heads/main/ClockWebsite_04_19.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000" />
+  <meta name="background-color" content="#000000" />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      font-family: 'Fantasque Sans Mono', monospace;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+
+    body {
+      padding: env(safe-area-inset);
+      position: relative;
+    }
+
+    #time {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate3d(-50%, -50%, 0);
+      font-size: 15vw;
+      line-height: 1;
+      white-space: nowrap;
+      text-align: center;
+      color: #FFFFFF;
+      will-change: transform;
+      transition: transform 5s ease-in-out;
+    }
+
+    #message {
+      position: absolute;
+      top: calc(50% + 10vw);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3.5vw;
+      color: #ADFF2F;
+      text-align: center;
+      transition: opacity 1s ease;
+    }
+
+    .fade-out {
+      opacity: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="time"></div>
+  <div id="message">以本地時間校準成功</div>
+
+  <script>
+    class NTPClock {
+      constructor(timeId, msgId) {
+        this.$time = document.getElementById(timeId);
+        this.$msg = document.getElementById(msgId);
+        this.tzOffset = parseInt(localStorage.getItem('tz_offset')) || this.DEFAULT_OFFSET;
+        this.ntpDelta = 0;
+      }
+
+      DEFAULT_OFFSET = 8 * 3600 * 1000;
+      BURNIN_DISTANCE = 1.5;
+      BURNIN_INTERVAL = 10000;
+      MSG_FADE_DELAY = 5000;
+      MSG_REMOVE_DELAY = 6000;
+
+      init() {
+        this.saveOffsetIfNotSet();
+        this.updateTime();
+        this.applyBurnInShift();
+        this.burninTimer = setInterval(() => this.applyBurnInShift(), this.BURNIN_INTERVAL);
+        setTimeout(() => this.$msg.classList.add('fade-out'), this.MSG_FADE_DELAY);
+        setTimeout(() => this.$msg.remove(), this.MSG_REMOVE_DELAY);
+      }
+
+      saveOffsetIfNotSet() {
+        if (!localStorage.getItem('tz_offset')) {
+          localStorage.setItem('tz_offset', this.DEFAULT_OFFSET);
+        }
+      }
+
+      applyBurnInShift() {
+        const dx = (Math.random() * 2 - 1) * this.BURNIN_DISTANCE;
+        const dy = (Math.random() * 2 - 1) * this.BURNIN_DISTANCE;
+        this.$time.style.transform = `translate3d(calc(-50% + ${dx}vw), calc(-50% + ${dy}vh), 0)`;
+      }
+
+      updateTime = () => {
+        const now = Date.now() + this.ntpDelta + this.tzOffset;
+        const d = new Date(now);
+        const hh = d.getUTCHours().toString().padStart(2, '0');
+        const mm = d.getUTCMinutes().toString().padStart(2, '0');
+        const ss = d.getUTCSeconds().toString().padStart(2, '0');
+        this.$time.textContent = `${hh}：${mm}：${ss}`;
+        const drift = now % 1000;
+        setTimeout(() => requestAnimationFrame(this.updateTime), 1000 - drift);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      new NTPClock('time', 'message').init();
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.error('SW 註冊失敗:', err));
+      }
+    });
+  </script>
+</body>
+</html>
 
   <!-- PWA 設定 -->
   <link rel="manifest" href="manifest.json" type="application/manifest+json" crossorigin="use-credentials">
